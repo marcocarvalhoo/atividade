@@ -1,0 +1,31 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
+
+namespace APIGateway.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class GatewayController : ControllerBase
+    {
+        private readonly ILogger<GatewayController> _logger;
+
+        public GatewayController(ILogger<GatewayController> logger)
+        {
+            _logger = logger;
+        }
+
+        [HttpGet("status")]
+        public IActionResult Status()
+        {
+            return Ok("API Gateway está funcionando!");
+        }
+
+        [HttpPost("solicitar-ferias")]
+        public async Task<IActionResult> SolicitarFerias([FromBody] FeriasSolicitacao solicitação)
+        {
+            // Simula a chamada para o microserviço de Férias
+            return Ok(new { message = "Solicitação encaminhada!" });
+        }
+    }
+}
