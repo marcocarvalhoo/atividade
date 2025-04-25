@@ -1,0 +1,48 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
+
+namespace FeriasService.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class FeriasController : ControllerBase
+    {
+        private static List<FeriasSolicitacao> ferias = new List<FeriasSolicitacao>();
+
+        [HttpPost("solicitar")]
+        public IActionResult SolicitarFerias([FromBody] FeriasSolicitacao solicitação)
+        {
+            ferias.Add(solicitação);
+            return Ok(new { message = "Solicitação de férias criada com sucesso!" });
+        }
+
+        [HttpPut("aprovar/{id}")]
+        [Authorize(Roles = "gestor,rh")]
+        public IActionResult AprovarFerias(int id)
+        {
+            var solicitacao = ferias.Find(f => f.Id == id);
+            if (solicitacao != null)
+            {
+                solicitacao.Status = "Aprovada";
+                return Ok(new { message = "Férias aprovadas com sucesso!" });
+            }
+
+            return NotFound();
+        }
+
+        [HttpGet("todas")]
+        public IActionResult GetFerias()
+        {
+            return Ok(ferias);
+        }
+    }
+
+    public class FeriasSolicitacao
+    {
+        public int Id { get; set; }
+        public string Colaborador { get; set; }
+        public string Status { get; set; }
+    }
+}
